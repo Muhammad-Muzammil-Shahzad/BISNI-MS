@@ -257,7 +257,6 @@ const InvoiceRead = () => {
     font-family:Arial, sans-serif;
     margin-top:10px;
 ">
-    </tr>
     <tr>
         <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;" >
             To
@@ -297,7 +296,6 @@ const InvoiceRead = () => {
     font-family:Arial, sans-serif;
     margin-top:10px;
 ">
-    </tr>
     <tr>
         <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;" >
             From
