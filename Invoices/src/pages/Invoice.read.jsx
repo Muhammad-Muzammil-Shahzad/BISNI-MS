@@ -168,6 +168,11 @@ const InvoiceRead = () => {
         <td colspan="3" style="text-align:right;font-weight:600;color:#15803d;">Rs. ${formatCur(commission)}</td>
       </tr>` : '';
 
+    const customerMobileNumbers = [
+      inv.customerMobileNumber1,
+      inv.customerMobileNumber2
+    ].filter(Boolean).join(' / ');
+
     const html = `<!DOCTYPE html>
     <html>
     <head>
@@ -193,6 +198,8 @@ const InvoiceRead = () => {
         .totals .grand-total { font-weight: 700; font-size: 15px; border-top: 2px solid #0891b2; color: #0891b2; }
         .totals .grand-total td { padding-top: 8px; }
         .footer { text-align: center; margin-top: 25px; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .info-table { width: 100%; border-collapse: collapse; font-size: 18px; font-family: Arial, sans-serif; margin-top: 10px; }
+        .info-table td { border: 2px solid #000; padding: 2px 3px; font-weight: bold; font-size: 22px; font-family: sans-serif; }
         @media print { body { padding: 10px; max-width: 100%; } }
         @page { size: A4; margin: 8mm; }
       </style>
@@ -217,7 +224,7 @@ const InvoiceRead = () => {
           </div>
           <div class="info-box">
             <p><span>Customer:</span> ${inv.customerName}</p>
-            <p><span>Contact:</span> ${inv.customerMobileNumber1}</p>
+            <p><span>Contact:</span> ${customerMobileNumbers || 'N/A'}</p>
             <p><span>Address:</span> ${inv.customerAddress || 'N/A'}</p>
           </div>
         </div>
@@ -250,83 +257,35 @@ const InvoiceRead = () => {
         </table>
       </div>
 
-      <table style="
-    width:100%;
-    border-collapse:collapse;
-    font-size:18px;
-    font-family:Arial, sans-serif;
-    margin-top:10px;
-">
-    <tr>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;" >
-            To
-        </td>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;" >
-            ${inv.customerName || 'N/A'}
-        </td>
+      <table class="info-table">
+        <tr>
+          <td>To</td>
+          <td>${inv.customerName || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Contact</td>
+          <td>${customerMobileNumbers || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Address</td>
+          <td>${inv.customerAddress || 'N/A'}</td>
+        </tr>
+      </table>
 
-    </tr>
-
-    <tr>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            Contact
-        </td>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            ${inv.customerMobileNumber1 || 'N/A'} &nbsp;&nbsp;&nbsp; || &nbsp;&nbsp;&nbsp; ${inv.customerMobileNumber2 || 'N/A'}
-        </td>
-
-    </tr>
-
-    <tr>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            Address
-        </td>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            ${inv.customerAddress || 'N/A'}
-        </td>
-
-    </tr>
-</table>
-
-
-      <table style="
-    width:100%;
-    border-collapse:collapse;
-    font-size:18px;
-    font-family:Arial, sans-serif;
-    margin-top:10px;
-">
-    <tr>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;" >
-            From
-        </td>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;" >
-            ${inv.employeeName || 'N/A'}
-        </td>
-
-    </tr>
-
-    <tr>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            Contact
-        </td>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            ${inv.employeeMobileNumber || 'N/A'}
-        </td>
-
-    </tr>
-
-
-    <tr>
-        <td style="border:2px solid #000; padding-top:2px; padding-bottom:2px; padding-left:3px; padding-right:3px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            Address
-        </td>
-        <td style="border:2px solid #000; padding-top:4px; padding-bottom:4px; padding-left:6px; padding-right:6px; font-weight:bold; font-size: 22px; font-family: sans-serif;">
-            ${inv.employeeAddress || 'N/A'}
-        </td>
-
-    </tr>
-</table>
+      <table class="info-table">
+        <tr>
+          <td>From</td>
+          <td>${inv.employeeName || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Contact</td>
+          <td>${inv.employeeMobileNumber || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Address</td>
+          <td>${inv.employeeAddress || 'N/A'}</td>
+        </tr>
+      </table>
 
       <div class="footer">
         <p>Generated by Bisni Sales Management | Thank you for Your Order!</p>
@@ -761,7 +720,7 @@ const InvoiceRead = () => {
       </div>
 
       {/* Custom CSS for extra small screens */}
-      <style jsx='true'>{`
+      <style jsx>{`
         @media (min-width: 480px) {
           .xs\\:grid-cols-2 {
             grid-template-columns: repeat(2, minmax(0, 1fr));
