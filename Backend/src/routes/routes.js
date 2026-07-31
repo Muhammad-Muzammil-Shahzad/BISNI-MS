@@ -17,6 +17,7 @@ const createInvoice = require('../controllers/invoice.create.controller');
 const readInvoices = require('../controllers/invoice.read.controller');
 const updateInvoice = require('../controllers/invoice.update.controller');
 const deleteInvoices = require('../controllers/invoice.delete.controller');
+const readSPInvoices = require('../controllers/invoice.read.sp.controller')
 
 const { startSession, endSession, readSession, deleteSession, readAllSessions, readSessionDetails } = require('../controllers/session.controller');
 const getStats = require('../controllers/stats.read.controller');
@@ -38,6 +39,7 @@ router.post('/invoice', attachActiveSession, createInvoice);  // Create invoice 
 router.get('/invoice', readInvoices);         // Read invoices with filters
 router.put('/invoice', updateInvoice);        // Update invoice
 router.delete('/invoice', deleteInvoices);    // Delete invoices with filters
+router.get('/invoice/sp', readSPInvoices);      //only for fetching Invoices
 
 // Session Routes
 router.post('/session/start', startSession);                    // Start new session
