@@ -1,7 +1,6 @@
-// Updated readInvoices controller with pagination support
 const Invoice = require('../models/invoice.model');
 
-// Read invoices with multiple filter options and pagination
+// Read invoices with multiple filter options
 const readInvoices = async (req, res) => {
     try {
         const {
@@ -12,15 +11,8 @@ const readInvoices = async (req, res) => {
             date,
             startDate,
             endDate,
-            employeeName,
-            page = 1,
-            limit = 7 // Default 7, minimum 5, maximum 7
+            employeeName
         } = req.query;
-        
-        // Ensure limit is between 5 and 7
-        const paginationLimit = Math.min(Math.max(parseInt(limit) || 7, 5), 7);
-        const currentPage = parseInt(page) || 1;
-        const skip = (currentPage - 1) * paginationLimit;
         
         let filter = {};
         
@@ -45,21 +37,11 @@ const readInvoices = async (req, res) => {
             };
         }
         
-        // Get total count for pagination
-        const totalCount = await Invoice.countDocuments(filter);
-        
-        // Get paginated invoices
-        const invoices = await Invoice.find(filter)
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(paginationLimit);
+        const invoices = await Invoice.find(filter).sort({ createdAt: -1 });
         
         res.status(200).json({
             message: 'Invoices retrieved successfully',
-            count: totalCount,
-            currentPage: currentPage,
-            totalPages: Math.ceil(totalCount / paginationLimit),
-            hasMore: skip + invoices.length < totalCount,
+            count: invoices.length,
             data: invoices
         });
     } catch (error) {
