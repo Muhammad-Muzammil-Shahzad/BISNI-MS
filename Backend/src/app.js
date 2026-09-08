@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const routes = require('./routes/routes');
+const inventoryHistoryRoutes = require('./routes/inventory.history.routes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api', routes);
+app.use('/api/inventory-history', inventoryHistoryRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
