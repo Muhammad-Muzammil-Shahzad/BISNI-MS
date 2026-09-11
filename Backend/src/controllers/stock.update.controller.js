@@ -1,4 +1,5 @@
 const Stock = require('../models/stock.model');
+const { logStockHistory } = require('./stockHistory.create.controller');
 
 // Update specific stock details
 const updateStock = async (req, res) => {
@@ -6,17 +7,27 @@ const updateStock = async (req, res) => {
         const { id } = req.params;
         const updateData = req.body;
         
+        // Get the original stock data BEFORE update
+        const originalStock = await Stock.findById(id);
+        
+        if (!originalStock) {
+            return res.status(404).json({
+                message: 'Stock not found'
+            });
+        }
+        
+        // Save original values for history
+        const previousValues = originalStock.toObject();
+        
+        // Perform the update
         const stock = await Stock.findByIdAndUpdate(
             id,
             updateData,
             { new: true, runValidators: true }
         );
         
-        if (!stock) {
-            return res.status(404).json({
-                message: 'Stock not found'
-            });
-        }
+        // Log history with previous values
+        await logStockHistory('UPDATE', stock.toObject(), previousValues);
         
         res.status(200).json({
             message: 'Stock updated successfully',
