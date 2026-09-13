@@ -1,4 +1,5 @@
 const Session = require('../models/session.model');
+const StockHistory = require('../models/stockHistory.model'); // NEW IMPORT
 
 // Start a new session
 const startSession = async (req, res) => {
@@ -56,6 +57,9 @@ const endSession = async (req, res) => {
                 message: 'No active session found'
             });
         }
+
+        const deleteResult = await StockHistory.deleteMany({});
+        console.log(`Stock history cleared: ${deleteResult.deletedCount} records deleted`);
         
         activeSession.sessionEndDateTime = new Date();
         activeSession.sessionStatus = 'Completed';
