@@ -99,13 +99,16 @@ const invoiceSchema = new mongoose.Schema({
     timezone: 'Asia/Karachi' 
 });
 
-// Auto-generate unique invoice ID based on date before saving
 invoiceSchema.pre('save', async function(next) {
     if (!this.invoiceId) {
-        const date = new Date();
-        const dateStr = date.getFullYear().toString() +
-                       (date.getMonth() + 1).toString().padStart(2, '0') +
-                       date.getDate().toString().padStart(2, '0');
+        // Pakistan Standard Time (UTC+5)
+        const now = new Date();
+        const pktOffset = 5 * 60 * 60 * 1000;
+        const pktDate = new Date(now.getTime() + pktOffset);
+        
+        const dateStr = pktDate.getUTCFullYear().toString() +
+                       (pktDate.getUTCMonth() + 1).toString().padStart(2, '0') +
+                       pktDate.getUTCDate().toString().padStart(2, '0');
         
         const count = await mongoose.model('Invoice').countDocuments({
             invoiceId: new RegExp('^INV-' + dateStr)
@@ -113,7 +116,6 @@ invoiceSchema.pre('save', async function(next) {
         
         this.invoiceId = 'INV-' + dateStr + '-' + (count + 1).toString().padStart(4, '0');
     }
-
 });
 
 const Invoice = mongoose.model('Invoice', invoiceSchema);
