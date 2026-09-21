@@ -47,15 +47,11 @@ const createInvoice = async (req, res) => {
             }
         }
         
-        // Auto-generate Invoice ID based on Pakistan Standard Time (PKT = UTC+5)
+        // Auto-generate Invoice ID based on current date (YYYYMMDD-XXXX)
         const now = new Date();
-        // Convert UTC to Pakistan Time
-        const pktOffset = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
-        const pktDate = new Date(now.getTime() + pktOffset);
-
-        const year = pktDate.getUTCFullYear();
-        const month = String(pktDate.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(pktDate.getUTCDate()).padStart(2, '0');
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
         const datePrefix = `${year}${month}${day}`;
         
         // Find the last invoice created today to generate sequential number
