@@ -47,26 +47,28 @@ const createInvoice = async (req, res) => {
             }
         }
         
-        // Auto-generate Invoice ID based on current date (YYYYMMDD-XXXX)
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const datePrefix = `${year}${month}${day}`;
-        
-        // Find the last invoice created today to generate sequential number
-        const lastInvoice = await Invoice.findOne({
-            invoiceId: new RegExp(`^INV-${datePrefix}`)
-        }).sort({ createdAt: -1 });
-        
-        let sequentialNumber = 1;
-        if (lastInvoice) {
-            const lastSequentialNumber = parseInt(lastInvoice.invoiceId.split('-')[2]);
-            sequentialNumber = lastSequentialNumber + 1;
-        }
-        
-        const formattedSequential = String(sequentialNumber).padStart(4, '0');
-        const invoiceId = `INV-${datePrefix}-${formattedSequential}`;
+        // Auto-generate Invoice ID based on current date in Pakistan Standard Time (YYYYMMDD-XXXX)
+const now = new Date();
+const pktTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Karachi' }));
+
+const year = pktTime.getFullYear();
+const month = String(pktTime.getMonth() + 1).padStart(2, '0');
+const day = String(pktTime.getDate()).padStart(2, '0');
+const datePrefix = `${year}${month}${day}`;
+
+// Find the last invoice created today (PKT) to generate sequential number
+const lastInvoice = await Invoice.findOne({
+    invoiceId: new RegExp(`^INV-${datePrefix}`)
+}).sort({ createdAt: -1 });
+
+let sequentialNumber = 1;
+if (lastInvoice) {
+    const lastSequentialNumber = parseInt(lastInvoice.invoiceId.split('-')[2]);
+    sequentialNumber = lastSequentialNumber + 1;
+}
+
+const formattedSequential = String(sequentialNumber).padStart(4, '0');
+const invoiceId = `INV-${datePrefix}-${formattedSequential}`;
         
         // Deduct stock quantities
         for (let product of invoiceData.products) {
