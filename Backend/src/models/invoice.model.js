@@ -94,7 +94,10 @@ const invoiceSchema = new mongoose.Schema({
         type: String,
         trim: true
     }
-}, { timestamps: true });
+}, { 
+    timestamps: true,
+    timezone: 'Asia/Karachi' 
+});
 
 // Auto-generate unique invoice ID based on date before saving
 invoiceSchema.pre('save', async function(next) {
