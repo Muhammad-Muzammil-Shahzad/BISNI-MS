@@ -47,16 +47,28 @@ const createInvoice = async (req, res) => {
             }
         }
         
-        // Auto-generate Invoice ID based on current date in Pakistan Standard Time (YYYYMMDD-XXXX)
+// Auto-generate Invoice ID based on current date in Pakistan Standard Time
 const now = new Date();
-const pktTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Karachi' }));
 
-const year = pktTime.getFullYear();
-const month = String(pktTime.getMonth() + 1).padStart(2, '0');
-const day = String(pktTime.getDate()).padStart(2, '0');
+const pktParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Karachi',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+}).formatToParts(now);
+
+const getPart = (type) => pktParts.find(p => p.type === type).value;
+
+const year = getPart('year');
+const month = getPart('month');
+const day = getPart('day');
 const datePrefix = `${year}${month}${day}`;
 
-// Find the last invoice created today (PKT) to generate sequential number
+// Find last invoice of today (PKT) for sequential number
 const lastInvoice = await Invoice.findOne({
     invoiceId: new RegExp(`^INV-${datePrefix}`)
 }).sort({ createdAt: -1 });
@@ -69,6 +81,18 @@ if (lastInvoice) {
 
 const formattedSequential = String(sequentialNumber).padStart(4, '0');
 const invoiceId = `INV-${datePrefix}-${formattedSequential}`;
+
+// Optional: PKT display string invoice ke saath save karein
+invoiceData.invoiceDatePKT = new Intl.DateTimeFormat('en-PK', {
+    timeZone: 'Asia/Karachi',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+}).format(now);
         
         // Deduct stock quantities
         for (let product of invoiceData.products) {
