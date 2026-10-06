@@ -11,7 +11,8 @@ const readInvoices = async (req, res) => {
             date,
             startDate,
             endDate,
-            employeeName
+            employeeName,
+            deliveredThrough
         } = req.query;
         
         let filter = {};
@@ -22,6 +23,7 @@ const readInvoices = async (req, res) => {
         if (customerMobileNumber) filter.customerMobileNumber1 = customerMobileNumber;
         if (invoiceId) filter.invoiceId = invoiceId;
         if (employeeName) filter.employeeName = employeeName;
+        if (deliveredThrough) filter.deliveredThrough = deliveredThrough;
         
         // Date filters
         if (date) {
