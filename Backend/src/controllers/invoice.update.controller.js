@@ -17,6 +17,11 @@ const updateInvoice = async (req, res) => {
             });
         }
         
+        // Handle deliveredThrough: update only if provided (optional field)
+        if (updateData.deliveredThrough !== undefined) {
+            updateData.deliveredThrough = updateData.deliveredThrough || '';
+        }
+        
         const invoice = await Invoice.findOneAndUpdate(
             filter,
             updateData,
