@@ -94,10 +94,11 @@ const createInvoice = async (req, res) => {
         );
         invoiceData.grandTotalAmount = productsTotal + (invoiceData.deliveryCharges || 0);
         
-        // Add auto-generated invoice ID and session IDs
+        // Add auto-generated invoice ID, session IDs, and deliveredThrough (optional)
         invoiceData.invoiceId = invoiceId;
         invoiceData.sessionId = req.activeSession._id;
         invoiceData.sessionIdentifier = req.activeSession.sessionIdentifier;
+        invoiceData.deliveredThrough = invoiceData.deliveredThrough || '';
         
         // Create and save invoice
         const invoice = new Invoice(invoiceData);
