@@ -85,6 +85,12 @@ const invoiceSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    // ✅ NEW FIELD: Delivered Through (not required)
+    deliveredThrough: {
+        type: String,
+        required: false,
+        trim: true
+    },
     sessionId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Session',
@@ -110,7 +116,6 @@ invoiceSchema.pre('save', async function(next) {
         
         this.invoiceId = 'INV-' + dateStr + '-' + (count + 1).toString().padStart(4, '0');
     }
-
 });
 
 const Invoice = mongoose.model('Invoice', invoiceSchema);
