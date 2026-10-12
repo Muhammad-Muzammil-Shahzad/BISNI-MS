@@ -20,33 +20,41 @@ const deleteInvoices = require('../controllers/invoice.delete.controller');
 
 const { startSession, endSession, readSession, deleteSession, readAllSessions, readSessionDetails } = require('../controllers/session.controller');
 const getStats = require('../controllers/stats.read.controller');
-const { readStockHistory, readStockHistoryById, getHistoryFilterOptions, deleteStockHistory } = require('../controllers/stockHistory.read.controller');
 
-// Stock Routes
+// ✅ UPDATED: Stock History imports (added getStockSummary)
+const { 
+    getStockSummary,
+    readStockHistory, 
+    getHistoryFilterOptions, 
+    deleteStockHistory 
+} = require('../controllers/stockHistory.read.controller');
+
+// ==================== STOCK ROUTES ====================
 router.post('/stock', createStock);
 router.get('/stock', readStocks);
 router.put('/stock/:id', updateStock);
 router.delete('/stock/:id', deleteStock);
 
-// Stock History Routes
-router.get('/stock-history', readStockHistory);
+// ==================== STOCK HISTORY ROUTES ====================
+// ⚠️ IMPORTANT: /summary and /filters must come BEFORE /:id
+router.get('/stock-history/summary', getStockSummary);
 router.get('/stock-history/filters', getHistoryFilterOptions);
-router.get('/stock-history/:id', readStockHistoryById);
+router.get('/stock-history', readStockHistory);
 router.delete('/stock-history', deleteStockHistory);
 
-// Employee Routes
+// ==================== EMPLOYEE ROUTES ====================
 router.post('/employee', createEmployee);
 router.get('/employee', readEmployees);
 router.put('/employee/:id', updateEmployee);
 router.delete('/employee/:id', deleteEmployee);
 
-// Invoice Routes
+// ==================== INVOICE ROUTES ====================
 router.post('/invoice', attachActiveSession, createInvoice);
 router.get('/invoice', readInvoices);
 router.put('/invoice', updateInvoice);
 router.delete('/invoice', deleteInvoices);
 
-// Session Routes
+// ==================== SESSION ROUTES ====================
 router.post('/session/start', startSession);
 router.post('/session/end', endSession);
 router.get('/sessions', readAllSessions);
@@ -55,7 +63,7 @@ router.get('/session/:sessionId', readSession);
 router.get('/session', readSession);
 router.delete('/session/:sessionId', deleteSession);
 
-// Statistics Route
+// ==================== STATISTICS ROUTE ====================
 router.get('/stats', getStats);
 
 module.exports = router;
