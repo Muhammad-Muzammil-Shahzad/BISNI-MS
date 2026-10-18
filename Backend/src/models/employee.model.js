@@ -36,7 +36,47 @@ const employeeSchema = new mongoose.Schema({
             type: Number,
             required: true,
             min: 0
-        }
+        },
+        // ✅ UPDATED: Replaced single productSalePrice with per-category price array.
+        // Example: Bag → [{ productCategory: 'Large', productSalePrice: 2500 },
+        //                 { productCategory: 'Small', productSalePrice: 2000 }]
+        categoryPrices: [{
+            productCategory: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            productSalePrice: {
+                type: Number,
+                required: true,
+                min: 0
+            }
+        }],
+        // ✅ NEW: Default delivery method for this product
+        deliveryMethod: {
+            type: String,
+            required: false,
+            trim: true,
+            default: ''
+        },
+        // ✅ NEW: Custom delivery charges based on quantity tiers
+        deliveryCharges: [{
+            minQuantity: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+            maxQuantity: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+            charges: {
+                type: Number,
+                required: true,
+                min: 0
+            }
+        }]
     }]
 }, { timestamps: true });
 
