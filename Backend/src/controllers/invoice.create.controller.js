@@ -4,7 +4,9 @@ const Employee = require('../models/employee.model');
 const Session = require('../models/session.model');
 
 // Create invoice with stock validation, deduction, and auto-generated Invoice ID
-// ✅ UPDATED: Auto-fills sale price from employee's per-category price (matched via productName + productCategory)
+// ✅ FIXED: Delivery charges calculated by PRODUCT NAME (not per category/color)
+// ✅ NEW: Accepts optional 'note' field
+// ✅ Auto-fills sale price from employee's per-category price
 const createInvoice = async (req, res) => {
     try {
         const invoiceData = req.body;
@@ -47,8 +49,7 @@ const createInvoice = async (req, res) => {
             }
         }
 
-        // ✅ NEW: Auto-fill sale price from per-category pricing, delivery method & delivery charges
-        let autoFilledDeliveryCharges = 0;
+        // ✅ NEW: Auto-fill sale price from per-category pricing
         let autoFilledDeliveryMethod = invoiceData.deliveredThrough || '';
 
         for (let product of invoiceData.products) {
@@ -70,18 +71,42 @@ const createInvoice = async (req, res) => {
                 if (!autoFilledDeliveryMethod && empCommission.deliveryMethod) {
                     autoFilledDeliveryMethod = empCommission.deliveryMethod;
                 }
+            }
+        }
 
-                if (empCommission.deliveryCharges && empCommission.deliveryCharges.length > 0) {
-                    const qty = parseInt(product.productQuantity) || 0;
-                    const tier = empCommission.deliveryCharges.find(
-                        t => qty >= t.minQuantity && qty <= t.maxQuantity
-                    );
-                    if (tier) {
-                        autoFilledDeliveryCharges += tier.charges;
-                    } else {
-                        const highestTier = empCommission.deliveryCharges[empCommission.deliveryCharges.length - 1];
-                        if (highestTier) autoFilledDeliveryCharges += highestTier.charges;
-                    }
+        // ✅ FIXED: Calculate delivery charges based on TOTAL QUANTITY PER PRODUCT NAME
+        // Group products by productName, then find the appropriate delivery tier
+        let autoFilledDeliveryCharges = 0;
+
+        // Group products by product name (sum quantities for same product)
+        const productQuantityMap = {};
+        for (let product of invoiceData.products) {
+            const key = product.productName;
+            if (!productQuantityMap[key]) {
+                productQuantityMap[key] = 0;
+            }
+            productQuantityMap[key] += parseInt(product.productQuantity) || 0;
+        }
+
+        // For each unique product name, find the delivery charge tier based on TOTAL quantity
+        for (const [productName, totalQty] of Object.entries(productQuantityMap)) {
+            const empCommission = employee.employeeCommission.find(
+                comm => comm.productName === productName
+            );
+
+            if (empCommission && empCommission.deliveryCharges && empCommission.deliveryCharges.length > 0) {
+                // Find the tier that matches the TOTAL quantity for this product
+                const tier = empCommission.deliveryCharges.find(
+                    t => totalQty >= t.minQuantity && totalQty <= t.maxQuantity
+                );
+
+                if (tier) {
+                    // ✅ Only ONE delivery charge for this product name (based on total qty)
+                    autoFilledDeliveryCharges += tier.charges;
+                } else {
+                    // If no exact tier match, use the highest tier
+                    const highestTier = empCommission.deliveryCharges[empCommission.deliveryCharges.length - 1];
+                    if (highestTier) autoFilledDeliveryCharges += highestTier.charges;
                 }
             }
         }
@@ -91,6 +116,11 @@ const createInvoice = async (req, res) => {
         }
 
         invoiceData.deliveredThrough = invoiceData.deliveredThrough || autoFilledDeliveryMethod || '';
+
+        // ✅ NEW: Handle optional note field
+        if (invoiceData.note !== undefined) {
+            invoiceData.note = invoiceData.note || '';
+        }
 
         // Auto-generate Invoice ID
         const now = new Date();
@@ -157,6 +187,8 @@ const createInvoice = async (req, res) => {
                 totalCommission += commissionAmount;
                 commissionDetails.push({
                     productName: product.productName,
+                    productCategory: product.productCategory,
+                    productColor: product.productColor,
                     quantity: product.productQuantity,
                     commissionPerUnit: commissionRecord.commissionAmount,
                     totalCommission: commissionAmount
