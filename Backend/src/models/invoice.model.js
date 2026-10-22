@@ -91,6 +91,13 @@ const invoiceSchema = new mongoose.Schema({
         required: false,
         trim: true
     },
+    // ✅ NEW FIELD: Optional note for invoice (only shown in print)
+    note: {
+        type: String,
+        required: false,
+        trim: true,
+        default: ''
+    },
     sessionId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Session',
