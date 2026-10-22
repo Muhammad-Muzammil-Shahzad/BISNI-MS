@@ -16,6 +16,7 @@ const deleteEmployee = require('../controllers/employee.delete.controller');
 const createInvoice = require('../controllers/invoice.create.controller');
 const readInvoices = require('../controllers/invoice.read.controller');
 const updateInvoice = require('../controllers/invoice.update.controller');
+const recoveryDeleteInvoices = require('../controllers/invoice.recoveryDelete.controller.js');
 const deleteInvoices = require('../controllers/invoice.delete.controller');
 
 const { startSession, endSession, readSession, deleteSession, readAllSessions, readSessionDetails } = require('../controllers/session.controller');
@@ -45,6 +46,7 @@ router.post('/invoice', attachActiveSession, createInvoice);
 router.get('/invoice', readInvoices);
 router.put('/invoice', updateInvoice);
 router.delete('/invoice', deleteInvoices);
+router.delete('/invoicerecovery', recoveryDeleteInvoices);
 
 // Session Routes
 router.post('/session/start', startSession);
